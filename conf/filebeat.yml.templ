@@ -123,7 +123,7 @@ filebeat.modules:
 
     # Set custom paths for the log files. If left empty,
     # Filebeat will choose the paths depending on your OS.
-    var.paths: ["{{ default .Env.nginx_log "/dev/null" }}"]
+    var.paths: ["{{ default .Env.nginx_error_log "/dev/null" }}"]
 
     # Prospector configuration (advanced). Any prospector configuration option
     # can be added under this section.
@@ -583,10 +583,12 @@ output.logstash:
   hosts: ["{{ default .Env.logstash_hostport "localhost:5044" }}" ]
 
   # Number of workers per Logstash host.
-  worker: 3
+  worker: 4
 
   # Set gzip compression level.
-  compression_level: 1
+  compression_level: 0
+
+  bulk_max_size: 4096
 
   # Optional load balance the events between the Logstash hosts
   #loadbalance: true

@@ -104,7 +104,7 @@ filebeat.modules:
     # Ingest Node pipeline to use. Options are `with_plugins` (default)
     # and `no_plugins`. Use `no_plugins` if you don't have the geoip or
     # the user agent Node ingest plugins installed.
-    #var.pipeline: with_plugins
+    var.pipeline: no_plugins
 
     # Set custom paths for the log files. If left empty,
     # Filebeat will choose the paths depending on your OS.
@@ -123,7 +123,7 @@ filebeat.modules:
 
     # Set custom paths for the log files. If left empty,
     # Filebeat will choose the paths depending on your OS.
-    var.paths: ["/tmp/nginx/error.log"]
+    var.paths: ["{{ default .Env.nginx_log "/dev/null" }}"]
 
     # Prospector configuration (advanced). Any prospector configuration option
     # can be added under this section.
@@ -383,8 +383,8 @@ filebeat.prospectors:
 # Optional fields that you can specify to add additional information to the
 # output. Fields can be scalar values, arrays, dictionaries, or any nested
 # combination of these.
-#fields:
-#  env: staging
+fields:
+  env: {{ default .Env.environment "prod" }}
 
 # If this option is set to true, the custom fields are stored as top-level
 # fields in the output document instead of being grouped under a fields
@@ -583,17 +583,17 @@ output.logstash:
   hosts: ["{{ default .Env.logstash_hostport "localhost:5044" }}" ]
 
   # Number of workers per Logstash host.
-  worker: 1
+  worker: 3
 
   # Set gzip compression level.
-  #compression_level: 3
+  compression_level: 1
 
   # Optional load balance the events between the Logstash hosts
   #loadbalance: true
 
   # Number of batches to be send asynchronously to logstash while processing
   # new batches.
-  #pipelining: 0
+  pipelining: 3
 
   # If enabled only a subset of events in a batch of events is transferred per
   # transaction.  The number of events to be sent increases up to `bulk_max_size`
